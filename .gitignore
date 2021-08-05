@@ -5,3 +5,5 @@
 /.vs
 /out/build/x64-Debug
 /Dll2.dll
+/ImGui/out/build/x64-Debug/.cmake/api/v1/query/client-MicrosoftVS
+/ImGui/out/build/x64-Debug

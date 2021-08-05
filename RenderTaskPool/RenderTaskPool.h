@@ -4,11 +4,14 @@
 #include<vector>
 #include <iostream>
 #include <ImGui/imgui.h>
+#include <unordered_map>
 class Renderer
 {
 public:
+    bool m_use = true;
     virtual ~Renderer() {};
     virtual std::string getName()const = 0;
+    bool getStatus()const { return m_use; }
     virtual void render()const = 0;
 };
 
@@ -16,32 +19,26 @@ class RenderTasks
 {
     using RendererPtr = std::unique_ptr<Renderer>;
 public:
-    RenderTasks() {
-        std::cout << "RenderTasks construct!"<<std::endl;
-    }
-    static RenderTasks* Get()
+    inline const std::unordered_map<std::string, RendererPtr>& getPlugins()const
     {
-        static RenderTasks ins;
-       
-        return &ins;
+        return m_data;
     }
-    void addRender(RendererPtr render);
+
+    void loadRender(RendererPtr render);
 
     void render();
 
-    void deleteRender();
+    void activeRender(const std::string& name);
+    void stopRender(const std::string& name);
+    void unloadRender(const std::string& name);
 private:
-    std::vector<RendererPtr> m_data;
+    std::unordered_map<std::string, RendererPtr> m_data;
 };
-using RegisterRenderFunc = void(*)(RenderTasks* rt);
 using RegisterRenderImGuiFunc = void(*)(RenderTasks* rt, ImGuiContext* imCtx);
 
-#define REGISTER_RENDER(Type) \
-extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks* rt){ \
-   rt->addRender(std::make_unique<Type>());\
-}
+
 #define REGISTER_RENDER_IMGUI(Type) \
 extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks* rt,ImGuiContext* imCtx){ \
    ImGui::SetCurrentContext(imCtx);\
-   rt->addRender(std::make_unique<Type>());\
+   rt->loadRender(std::make_unique<Type>());\
 }

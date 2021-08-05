@@ -14,10 +14,10 @@ public:
 	void render() const override
 	{
 		ImGui::Begin(this->getName().data());
-		std::cout << "test2\n";
+		std::cout << "u are sb\n";
 		ImGui::End();
 	}
 
 };
 
-REGISTER_RENDER(Test2)
+REGISTER_RENDER_IMGUI(Test2)
