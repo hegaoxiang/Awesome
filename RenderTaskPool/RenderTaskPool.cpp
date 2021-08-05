@@ -1,6 +1,7 @@
 #include "RenderTaskPool.h"
 #include <exception>
 #include <iostream>
+
 void RenderTasks::addRender(RendererPtr render)
 {
 	m_data.push_back(std::move(render));

@@ -6,5 +6,4 @@ cmake_minimum_required (VERSION 3.8)
 AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} imguiLibSrc)
 # 将源代码添加到此项目的可执行文件。
 add_library (ImGui STATIC ${imguiLibSrc})
-
 # TODO: 如有需要，请添加测试并安装目标。

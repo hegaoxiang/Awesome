@@ -5,6 +5,9 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("Awesome")
 
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Lib)
+
+
 set(CMAKE_CXX_STANDARD 17)
 # 包含子项目。
 add_subdirectory ("Awesome")

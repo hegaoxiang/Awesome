@@ -1,6 +1,5 @@
 #include <RenderTaskPool/RenderTaskPool.h>
 #include <iostream>
-#include <ImGui/imgui.h>
 
 class Test1:public Renderer
 {
@@ -13,15 +12,17 @@ public:
 
 	void render() const override
 	{
-		auto c = RenderTasks::Get();
-		std::cout << "test1\n";
+		ImGui::Begin(this->getName().data());
+		ImGui::Text("awesome");
+		ImGui::End();
 	}
 
 };
 
-extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks * rt) {
-		std::cout << "construct by dll" << std::endl;
-		auto c = RenderTasks::Get();
-		rt->addRender(std::make_unique<Test1>());
-}
+//extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks * rt) {
+//		std::cout << "construct by dll" << std::endl;
+//		auto c = RenderTasks::Get();
+//		rt->addRender(std::make_unique<Test1>());
+//}
+REGISTER_RENDER_IMGUI(Test1)
 //REGISTER_RENDER(Test1)

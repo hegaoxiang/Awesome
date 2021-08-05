@@ -34,6 +34,7 @@ private:
     std::vector<RendererPtr> m_data;
 };
 using RegisterRenderFunc = void(*)(RenderTasks* rt);
+using RegisterRenderImGuiFunc = void(*)(RenderTasks* rt, ImGuiContext* imCtx);
 
 #define REGISTER_RENDER(Type) \
 extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks* rt){ \

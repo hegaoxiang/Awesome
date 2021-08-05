@@ -114,11 +114,12 @@ bool GUI::BeforeRender()
     fileDialog.Display();
     if (fileDialog.HasSelected())
     {
-        HMODULE m = LoadLibrary(fileDialog.GetSelected().string().data());
-        if(m)
+        if(HMODULE m = LoadLibrary(fileDialog.GetSelected().string().data());m)
         {
-            RegisterRenderFunc regisFunc = (RegisterRenderFunc)GetProcAddress(m, "RegisterRender");
-            regisFunc(RenderTasks::Get());
+            if (RegisterRenderFunc regisFunc = (RegisterRenderFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
+                regisFunc(RenderTasks::Get());
+			if (RegisterRenderImGuiFunc regisFunc = (RegisterRenderImGuiFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
+				regisFunc(RenderTasks::Get(),ImGui::GetCurrentContext());
         }
         fileDialog.ClearSelected();
     }
