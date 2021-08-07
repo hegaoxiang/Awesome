@@ -12,7 +12,7 @@ void RenderTasks::loadRender(RendererPtr render)
 	}
 }
 
-void RenderTasks::render()
+void RenderTasks::render(entt::registry& reg)
 {
 	for (auto& i : m_data)
 	{
@@ -20,7 +20,7 @@ void RenderTasks::render()
 		{
 			if (i.second->m_use)
 			{
-				i.second->render();
+				i.second->onUpdate(reg);
 			}
 		}
 		catch (std::exception& e)
@@ -44,8 +44,3 @@ void RenderTasks::stopRender(const std::string& name)
 	m_data[name]->m_use = false;
 }
 
-void RenderTasks::unloadRender(const std::string& name)
-{
-	assert(m_data.find(name) != m_data.end());
-	m_data.erase(name);
-}

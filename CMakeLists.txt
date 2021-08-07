@@ -19,3 +19,7 @@ add_subdirectory("ImGui")
 add_subdirectory("test1")
 
 add_subdirectory("test2")
+
+add_subdirectory("entt")
+
+add_subdirectory("imgui_entt_entity_editor")

@@ -1,7 +1,28 @@
 #include <RenderTaskPool/RenderTaskPool.h>
 #include <iostream>
+#include <RenderTaskPool/Component.h>
 
-class Test1:public Renderer
+namespace Component
+{
+	struct Test1
+	{
+		float t1;
+		float t2;
+	};
+}
+namespace MM {
+	template <>
+	void ComponentEditorWidget<Component::Test1>(entt::registry& reg, entt::registry::entity_type e)
+	{
+		auto& t = reg.get<Component::Test1>(e);
+		ImGui::InputFloat("t1", &t.t1);
+		ImGui::InputFloat("t2", &t.t2);
+	}
+}
+
+REGISTER_COMPONENT(Test1)
+
+class Test1:public System
 {
 public:
 	std::string getName() const override
@@ -10,10 +31,13 @@ public:
 	}
 
 
-	void render() const override
+	void onUpdate(entt::registry& reg) const override
 	{
 		ImGui::Begin(this->getName().data());
-		ImGui::Text("awesome");
+		reg.view<Component::TRS>().each([](auto e,Component::TRS& t) {
+			ImGui::Text("ID %d TRS %d",entt::to_integral(e),t.x);
+			});
+		
 		ImGui::End();
 	}
 

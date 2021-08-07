@@ -32,6 +32,29 @@ void CleanupRenderTarget();
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+
+
+namespace MM {
+	template <>
+	void ComponentEditorWidget<Component::TRS>(entt::registry& reg, entt::registry::entity_type e)
+	{
+		auto& t = reg.get<Component::TRS>(e);
+	}
+
+	template <>
+	void ComponentEditorWidget<Component::Mesh>(entt::registry& reg, entt::registry::entity_type e)
+	{
+
+	}
+
+	template <>
+	void ComponentEditorWidget<Component::Material>(entt::registry& reg, entt::registry::entity_type e)
+	{
+
+	}
+}
+
+
 void GUI::Init()
 {
 	// Create application window
@@ -102,9 +125,13 @@ void GUI::Init()
     // (optional) set browser properties
 	fileDialog.SetTitle("title");
 	//fileDialog.SetTypeFilters({ ".h", ".dll" });
+
+	m_editor.registerComponent<Component::TRS>("TRS");
+	m_editor.registerComponent<Component::Mesh>("Mesh");
+	m_editor.registerComponent<Component::Material>("Material");
 }
 
-void DealAddPlugin()
+void GUI::DealAddPlugin()
 {
 	fileDialog.Display();
 	if (fileDialog.HasSelected())
@@ -114,11 +141,13 @@ void DealAddPlugin()
 		{
 			if (RegisterRenderImGuiFunc regisFunc = (RegisterRenderImGuiFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
 				regisFunc(Engine::GetRenderTaskPool(), ImGui::GetCurrentContext());
+			if (RegisterComponentFunc regisFunc = (RegisterComponentFunc)GetProcAddress(m, "RegisterComponent"); regisFunc)
+				regisFunc(m_editor);
 		}
 		fileDialog.ClearSelected();
 	}
 }
-void ShowMainMenu()
+void  GUI::ShowMainMenu()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -148,13 +177,6 @@ void ShowMainMenu()
 						if (ImGui::MenuItem("active"))
 							Engine::GetRenderTaskPool()->activeRender(it.second->getName());
 					}
-						
-					
-					
-					if(iterInvalid = ImGui::MenuItem("unload"), iterInvalid)
-					{
-						Engine::GetRenderTaskPool()->unloadRender(it.second->getName());
-					}
 					ImGui::EndMenu();
 				}
 				if (iterInvalid)
@@ -168,7 +190,7 @@ void ShowMainMenu()
 		ImGui::EndMainMenuBar();
 	}
 }
-bool GUI::BeforeRender()
+bool GUI::BeforeRender( entt::registry& reg)
 {
     MSG msg;
     while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -185,9 +207,13 @@ bool GUI::BeforeRender()
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-	::ShowMainMenu();
-	::DealAddPlugin();
+	ShowMainMenu();
+	DealAddPlugin();
 
+	entt::entity e;
+	m_editor.renderSimpleCombo(reg, e);
+
+	/*
 	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 	if (show_demo_window)
 		ImGui::ShowDemoWindow(&show_demo_window);
@@ -224,6 +250,7 @@ bool GUI::BeforeRender()
 			show_another_window = false;
 		ImGui::End();
 	}
+	*/
 
     return true;
 }

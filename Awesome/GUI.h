@@ -1,13 +1,26 @@
 #pragma once
+#include <RenderTaskPool/Component.h>
 class GUI
 {
 public:
-    static void Init();
+    static GUI& Get() {
+        static GUI ins;
+        return ins;
+    }
+	void Init();
 
-    static bool BeforeRender();
+	bool BeforeRender(entt::registry& reg);
 
-    static bool AfterRender();
+	bool AfterRender();
 
-    static void Exit();
+	void Exit();
+
+private:
+    void DealAddPlugin();
+
+    void ShowMainMenu();
+
+private:
+    MM::EntityEditor<entt::entity> m_editor;
 };
 

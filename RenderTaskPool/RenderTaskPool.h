@@ -5,19 +5,20 @@
 #include <iostream>
 #include <ImGui/imgui.h>
 #include <unordered_map>
-class Renderer
+#include <entt/entt.hpp>
+class System
 {
 public:
     bool m_use = true;
-    virtual ~Renderer() {};
+    virtual ~System() {};
     virtual std::string getName()const = 0;
     bool getStatus()const { return m_use; }
-    virtual void render()const = 0;
+    virtual void onUpdate(entt::registry& reg)const = 0;
 };
 
 class RenderTasks
 {
-    using RendererPtr = std::unique_ptr<Renderer>;
+    using RendererPtr = std::unique_ptr<System>;
 public:
     inline const std::unordered_map<std::string, RendererPtr>& getPlugins()const
     {
@@ -26,11 +27,10 @@ public:
 
     void loadRender(RendererPtr render);
 
-    void render();
+    void render(entt::registry& reg);
 
     void activeRender(const std::string& name);
     void stopRender(const std::string& name);
-    void unloadRender(const std::string& name);
 private:
     std::unordered_map<std::string, RendererPtr> m_data;
 };
