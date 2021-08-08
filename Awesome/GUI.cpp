@@ -145,7 +145,7 @@ void GUI::DealAddPlugin()
 			if (RegisterRenderImGuiFunc regisFunc = (RegisterRenderImGuiFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
 				regisFunc(Engine::GetRenderTaskPool(), ImGui::GetCurrentContext());
 			if (RegisterComponentFunc regisFunc = (RegisterComponentFunc)GetProcAddress(m, "RegisterComponent"); regisFunc)
-				regisFunc(m_editor);
+				regisFunc(m_editor,ImGui::GetCurrentContext());
 		}
 		fileDialog.ClearSelected();
 	}

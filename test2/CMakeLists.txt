@@ -14,5 +14,5 @@ target_link_libraries(template "RenderTaskPool" "ImGui")
 target_link_directories(template PRIVATE D:/repo/Awesome/Awesome/out/build/x64-Debug/RenderTaskPool D:/repo/Awesome/Awesome/out/build/x64-Debug/ImGui)
 target_include_directories(template PRIVATE D:/repo/Awesome/Awesome )
 
-#target_include_directories(test2 PRIVATE ${PROJECT_SOURCE_DIR})
+#target_include_directories(template PRIVATE ${PROJECT_SOURCE_DIR})
 

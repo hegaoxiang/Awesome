@@ -20,10 +20,11 @@ namespace Component
 	};
 };
 
-using RegisterComponentFunc = void(*)(MM::EntityEditor<entt::entity>&);
+using RegisterComponentFunc = void(*)(MM::EntityEditor<entt::entity>&, ImGuiContext* imCtx);
 
 
 #define REGISTER_COMPONENT(Type) \
-extern "C"  __declspec(dllexport) void RegisterComponent(MM::EntityEditor<entt::entity>& editor){ \
+extern "C"  __declspec(dllexport) void RegisterComponent(MM::EntityEditor<entt::entity>& editor, ImGuiContext* imCtx){ \
+  ImGui::SetCurrentContext(imCtx);\
   editor.registerComponent<Component::Type>(#Type);\
 }
