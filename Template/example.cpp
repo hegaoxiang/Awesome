@@ -44,7 +44,7 @@ public:
 	void onUpdate(entt::registry& reg) const override
 	{
 		ImGui::Begin(this->getName().data());
-		reg.view<Component::ExampleSystem>().each([](auto e, Component::ExampleSystem& t) {
+		reg.view<Component::ExampleComponent>().each([](auto e, Component::ExampleComponent& t) {
 
 			ImGui::Text("ID %d ExampleSystem %d", entt::to_integral(e), t.exampleVar);
 
@@ -57,6 +57,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-REGISTER_RENDER_IMGUI(DeskTest1)
+REGISTER_RENDER_IMGUI(ExampleSystem)
 //////////////////////////////////////////////////////////////////////////
 */

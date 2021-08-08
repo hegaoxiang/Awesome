@@ -16,7 +16,7 @@ add_subdirectory("RenderTaskPool")
 
 add_subdirectory("ImGui")
 
-add_subdirectory("test1")
+add_subdirectory("Template")
 
 add_subdirectory("entt")
 
