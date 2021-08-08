@@ -7,6 +7,9 @@
 #include "ImGui/imfilebrowser.h"
 #include <d3d11.h>
 #include <tchar.h>
+#include <chrono>
+#include <Shlobj.h>
+#include <shellapi.h>
 #include "Engine.h"
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
@@ -155,12 +158,44 @@ void  GUI::ShowMainMenu()
 		{
 			auto& allPlugins = Engine::GetRenderTaskPool()->getPlugins();
 
-			if (ImGui::MenuItem("load plugin"))
+			if (ImGui::MenuItem("New plugin"))
 			{
-				fileDialog.SetTypeFilters({  ".dll" });
+				static auto GetCT = []() {
+					auto now = std::chrono::system_clock::now();
+					//通过不同精度获取相差的毫秒数
+					uint64_t dis_millseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count()
+						- std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count() * 1000;
+
+					time_t tt = std::chrono::system_clock::to_time_t(now);
+					auto time_tm = localtime(&tt);
+
+					static char strTime[25] = { 0 };
+					sprintf(strTime, "%d_%02d_%02d_%02d_%02d_%02d_%03d", time_tm->tm_year + 1900,
+						time_tm->tm_mon + 1, time_tm->tm_mday, time_tm->tm_hour,
+						time_tm->tm_min, time_tm->tm_sec, (int)dis_millseconds);
+					return strTime;
+				};
+				auto ct = GetCT();
+				static char cmd[200] = { 0 };
+				sprintf(cmd, "mkdir %s", ct);
+				system(cmd);
+
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\CMakeLists.txt .\\%s", ct);
+				system(cmd);
+
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\example.cpp .\\%s", ct);
+				system(cmd);
+
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\template.bat  .\\");
+				system(cmd);
+
+				ShellExecute(NULL, "open", "template.bat",PCHAR(ct), NULL, SW_HIDE);
+			}
+			if (ImGui::MenuItem("Load plugin"))
+			{
+				fileDialog.SetTypeFilters({".dll" });
 				fileDialog.Open();
 			}
-			
 			for (auto& it : allPlugins)
 			{
 				bool iterInvalid = false;

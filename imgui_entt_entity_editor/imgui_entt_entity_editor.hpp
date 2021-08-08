@@ -21,7 +21,7 @@
 
 namespace MM {
 	template <class EntityType>
-	inline void EntityWidget(EntityType& e, entt::basic_registry<EntityType>& reg, bool dropTarget = false)
+	inline void EntityWidget(EntityType& e, entt::basic_registry<EntityType>& reg)
 	{
 
 		static EntityType m_selectEntity = (EntityType)-1;
@@ -32,12 +32,11 @@ namespace MM {
 			sprintf(label, "ID: %d", entt::to_integral(e));
 			ImGui::Bullet(); ImGui::Selectable(label, false);
 			if (ImGui::IsItemActive())
-				m_selectEntity = e;		}
-		else {
-			ImGui::Text("Invalid Entity");
+				m_selectEntity = e;		
 		}
-		if (dropTarget && m_selectEntity != (EntityType)-1) {
+		else if (m_selectEntity != (EntityType)-1) {
 			e = m_selectEntity;
+			ImGui::Text("ID: %d", entt::to_integral(e));
 		}
 		ImGui::PopID();
 	}
@@ -146,7 +145,7 @@ public:
 		ImGui::TextUnformatted("Editing:");
 		ImGui::SameLine();
 
-		MM_IEEE_ENTITY_WIDGET(e, registry, true);
+		MM_IEEE_ENTITY_WIDGET(e, registry);
 
 		if (ImGui::Button("New")) {
 			e = registry.create();
@@ -255,7 +254,7 @@ public:
 		if (comp_list.empty()) {
 			ImGui::Text("Orphans:");
 			registry.orphans([&registry](auto e){
-				MM_IEEE_ENTITY_WIDGET(e, registry, false);
+				MM_IEEE_ENTITY_WIDGET(e, registry);
 			});
 		} else {
 			auto view = registry.runtime_view(comp_list.begin(), comp_list.end());
@@ -263,7 +262,7 @@ public:
 
 			if (ImGui::BeginChild("entity list")) {
 				for (auto e : view) {
-					MM_IEEE_ENTITY_WIDGET(e, registry, false);
+					MM_IEEE_ENTITY_WIDGET(e, registry);
 				}
 			}
 			ImGui::EndChild();
