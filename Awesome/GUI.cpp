@@ -180,13 +180,13 @@ void  GUI::ShowMainMenu()
 				sprintf(cmd, "mkdir %s", ct);
 				system(cmd);
 
-				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\CMakeLists.txt .\\%s", ct);
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\Template\\CMakeLists.txt .\\%s", ct);
 				system(cmd);
 
-				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\example.cpp .\\%s", ct);
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\Template\\example.cpp .\\%s", ct);
 				system(cmd);
 
-				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\test2\\template.bat  .\\");
+				sprintf(cmd, "copy D:\\repo\\Awesome\\Awesome\\Template\\template.bat  .\\");
 				system(cmd);
 
 				ShellExecute(NULL, "open", "template.bat",PCHAR(ct), NULL, SW_HIDE);
