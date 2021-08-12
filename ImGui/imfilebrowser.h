@@ -90,6 +90,11 @@ namespace ImGui
         // default value is 0 (the first type filter)
         void SetCurrentTypeFilterIndex(int index);
 
+
+        void SetFileBrowserFlags(ImGuiFileBrowserFlags flag)
+        {
+            flags_ = flag;
+        }
     private:
     
         template <class Functor>

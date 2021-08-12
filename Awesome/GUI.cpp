@@ -11,6 +11,16 @@
 #include <Shlobj.h>
 #include <shellapi.h>
 #include "Engine.h"
+#include "Serialize.h"
+#include <fstream>
+enum class Command
+{
+	LoadPlugin,
+	SaveScene,
+	OpenScene
+};
+
+Command g_CommandList;
 // Data
 static ID3D11Device*            g_pd3dDevice = NULL;
 static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
@@ -35,6 +45,22 @@ void CleanupRenderTarget();
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+char* GetCT()
+{
+	auto now = std::chrono::system_clock::now();
+	//通过不同精度获取相差的毫秒数
+	uint64_t dis_millseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count()
+		- std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count() * 1000;
+
+	time_t tt = std::chrono::system_clock::to_time_t(now);
+	auto time_tm = localtime(&tt);
+
+	static char strTime[25] = { 0 };
+	sprintf(strTime, "%d_%02d_%02d_%02d_%02d_%02d_%03d", time_tm->tm_year + 1900,
+		time_tm->tm_mon + 1, time_tm->tm_mday, time_tm->tm_hour,
+		time_tm->tm_min, time_tm->tm_sec, (int)dis_millseconds);
+	return strTime;
+}
 
 
 namespace MM {
@@ -42,18 +68,21 @@ namespace MM {
 	void ComponentEditorWidget<Component::TRS>(entt::registry& reg, entt::registry::entity_type e)
 	{
 		auto& t = reg.get<Component::TRS>(e);
+		//ImGui::
 	}
 
 	template <>
 	void ComponentEditorWidget<Component::Mesh>(entt::registry& reg, entt::registry::entity_type e)
 	{
-
+		auto& t = reg.get<Component::Mesh>(e);
 	}
 
 	template <>
 	void ComponentEditorWidget<Component::Material>(entt::registry& reg, entt::registry::entity_type e)
 	{
-
+		auto& t = reg.get<Component::Material>(e);
+		ImGui::InputFloat3("albedo", t.albedo.data());
+		ImGui::DragFloat("roughness", &t.roughness, 0.1f, 0, 1);
 	}
 }
 
@@ -134,19 +163,65 @@ void GUI::Init()
 	m_editor.registerComponent<Component::Material>("Material");
 }
 
-void GUI::DealAddPlugin()
+void GUI::DealCommand(entt::registry& reg)
 {
 	fileDialog.Display();
 	if (fileDialog.HasSelected())
 	{
-		
-		if (HMODULE m = LoadLibrary(fileDialog.GetSelected().string().data()); m)
+		switch (g_CommandList)
 		{
-			if (RegisterRenderImGuiFunc regisFunc = (RegisterRenderImGuiFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
-				regisFunc(Engine::GetRenderTaskPool(), ImGui::GetCurrentContext());
-			if (RegisterComponentFunc regisFunc = (RegisterComponentFunc)GetProcAddress(m, "RegisterComponent"); regisFunc)
-				regisFunc(m_editor,ImGui::GetCurrentContext());
+		case Command::LoadPlugin:
+			if (HMODULE m = LoadLibrary(fileDialog.GetSelected().string().data()); m)
+			{
+				if (RegisterRenderImGuiFunc regisFunc = (RegisterRenderImGuiFunc)GetProcAddress(m, "RegisterRender"); regisFunc)
+					regisFunc(Engine::GetRenderTaskPool(), ImGui::GetCurrentContext());
+				if (RegisterComponentFunc regisFunc = (RegisterComponentFunc)GetProcAddress(m, "RegisterComponent"); regisFunc)
+					regisFunc(m_editor, ImGui::GetCurrentContext());
+			}
+			break;
+		case Command::SaveScene:
+		{
+			auto s = fileDialog.GetSelected().string().append("\\").append(GetCT()).append(".json");
+
+			auto jsonData = Serialization::Serialize(reg);
+			std::fstream fo(s, std::ios::out);
+			fo << jsonData;
+			fo.close();
 		}
+			break;
+		case Command::OpenScene:// 打开场景文件，加载json数据进内存
+		{
+			auto s = fileDialog.GetSelected().string();
+
+			
+			
+			if (std::fstream fi(s, std::ios::in); fi)
+			{
+				std::ostringstream tmp;
+				tmp << fi.rdbuf();
+				try
+				{
+					Serialization::UnSerialize(reg, tmp.str());
+				}
+				catch (const std::exception& e)
+				{
+					if (ImGui::Begin("Open Scene Fail"))
+					{
+						ImGui::Text("can not parse the scene");
+						ImGui::End();
+					}
+				}
+
+				fi.close();
+			}
+			
+		}
+		break;
+		default:
+			throw "error in command";
+			break;
+		}
+
 		fileDialog.ClearSelected();
 	}
 }
@@ -160,21 +235,7 @@ void  GUI::ShowMainMenu()
 
 			if (ImGui::MenuItem("New plugin"))
 			{
-				static auto GetCT = []() {
-					auto now = std::chrono::system_clock::now();
-					//通过不同精度获取相差的毫秒数
-					uint64_t dis_millseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count()
-						- std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count() * 1000;
-
-					time_t tt = std::chrono::system_clock::to_time_t(now);
-					auto time_tm = localtime(&tt);
-
-					static char strTime[25] = { 0 };
-					sprintf(strTime, "%d_%02d_%02d_%02d_%02d_%02d_%03d", time_tm->tm_year + 1900,
-						time_tm->tm_mon + 1, time_tm->tm_mday, time_tm->tm_hour,
-						time_tm->tm_min, time_tm->tm_sec, (int)dis_millseconds);
-					return strTime;
-				};
+				
 				auto ct = GetCT();
 				static char cmd[200] = { 0 };
 				sprintf(cmd, "mkdir %s", ct);
@@ -193,6 +254,7 @@ void  GUI::ShowMainMenu()
 			}
 			if (ImGui::MenuItem("Load plugin"))
 			{
+				g_CommandList = Command::LoadPlugin;
 				fileDialog.SetTypeFilters({".dll" });
 				fileDialog.Open();
 			}
@@ -222,6 +284,7 @@ void  GUI::ShowMainMenu()
 			ImGui::EndMenu();
 		}
 
+		
 		ImGui::EndMainMenuBar();
 	}
 }
@@ -243,11 +306,35 @@ bool GUI::BeforeRender( entt::registry& reg)
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
 	ShowMainMenu();
-	DealAddPlugin();
+	DealCommand(reg);
 
 	entt::entity e;
 	m_editor.renderSimpleCombo(reg, e);
 
+	if (ImGui::Begin("scene"))
+	{
+		if (ImGui::Button("SAVE SCENE"))
+		{
+			g_CommandList = (Command::SaveScene);
+			
+			fileDialog.SetFileBrowserFlags(ImGuiFileBrowserFlags_SelectDirectory);
+			fileDialog.SetTypeFilters({ "" });
+			fileDialog.Open();
+			
+		}
+		if (ImGui::Button("Open SCENE"))
+		{
+			g_CommandList = Command::OpenScene;
+
+			fileDialog.SetFileBrowserFlags(ImGuiFileBrowserFlags_EnterNewFilename);
+			fileDialog.SetTypeFilters({ ".json" });
+			fileDialog.Open();
+
+		}
+		ImGui::End();
+	}
+
+	
 	/*
 	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 	if (show_demo_window)

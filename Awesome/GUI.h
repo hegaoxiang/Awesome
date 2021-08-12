@@ -16,7 +16,7 @@ public:
 	void Exit();
 
 private:
-    void DealAddPlugin();
+    void DealCommand(entt::registry& reg);
 
     void ShowMainMenu();
 

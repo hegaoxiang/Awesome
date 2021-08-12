@@ -66,7 +66,7 @@
 #include <enoki/array_macro.h>
 
 #include <enoki/half.h>
-
+#include <nlohmann/json.hpp>
 NAMESPACE_BEGIN(enoki)
 
 template <typename Value_, size_t Size_>
@@ -173,7 +173,29 @@ struct PacketMask : StaticArrayImpl<Value_, Size_, true, PacketMask<Value_, Size
     using Base::operator=;
 };
 
+
 NAMESPACE_END(enoki)
+
+using Float3 = enoki::Array<float, 3>;
+
+namespace nlohmann {
+
+	template <>
+	struct adl_serializer <Float3> {
+		static void to_json(json& j, const Float3& value) {
+			// calls the "to_json" method in T's namespace
+            j = json{ {"x",value.x()},{"y",value.y()},{"z",value.z()} };
+		}
+
+		static void from_json(const json& j, Float3& value) {
+            value[0] = j["x"];
+            value[1] = j["y"];
+            value[2] = j["z"];
+			// same thing, but with the "from_json" method
+		}
+	};
+}
+
 
 #if defined(_MSC_VER)
 #  pragma warning(pop)
