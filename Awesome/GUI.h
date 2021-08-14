@@ -9,11 +9,8 @@ public:
     }
 	void Init();
 
-	bool BeforeRender(entt::registry& reg);
+	bool Update();
 
-	bool AfterRender();
-
-	void Exit();
 
 private:
     void DealCommand(entt::registry& reg);
@@ -21,6 +18,6 @@ private:
     void ShowMainMenu();
 
 private:
-    MM::EntityEditor<entt::entity> m_editor;
+  
 };
 

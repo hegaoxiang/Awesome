@@ -20,6 +20,11 @@ class RenderTasks
 {
     using RendererPtr = std::unique_ptr<System>;
 public:
+	inline static RenderTasks& Get()
+	{
+		static RenderTasks pool;
+		return pool;
+	}
     inline const std::unordered_map<std::string, RendererPtr>& getPlugins()const
     {
         return m_data;
@@ -34,11 +39,11 @@ public:
 private:
     std::unordered_map<std::string, RendererPtr> m_data;
 };
-using RegisterRenderImGuiFunc = void(*)(RenderTasks* rt, ImGuiContext* imCtx);
+using RegisterRenderImGuiFunc = void(*)(RenderTasks& rt, ImGuiContext* imCtx);
 
 
 #define REGISTER_RENDER_IMGUI(Type) \
-extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks* rt,ImGuiContext* imCtx){ \
+extern "C"  __declspec(dllexport) void RegisterRender(RenderTasks& rt,ImGuiContext* imCtx){ \
    ImGui::SetCurrentContext(imCtx);\
-   rt->loadRender(std::make_unique<Type>());\
+   rt.loadRender(std::make_unique<Type>());\
 }

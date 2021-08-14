@@ -13,7 +13,9 @@
 */
 
 #pragma once
-
+#ifndef NOMINMAX                       
+#  define NOMINMAX
+#endif
 #include "array_traits.h"
 #include "array_fallbacks.h"
 

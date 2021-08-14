@@ -23,3 +23,5 @@ add_subdirectory("entt")
 add_subdirectory("imgui_entt_entity_editor")
 
 add_subdirectory("nlohmann")
+
+add_subdirectory("YDXRender")
