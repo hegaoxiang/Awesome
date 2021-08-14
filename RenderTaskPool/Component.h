@@ -3,16 +3,13 @@
 #include <imgui_entt_entity_editor/imgui_entt_entity_editor.hpp>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-using namespace enoki;
-
 namespace Component
 {
 	struct TRS
 	{
 		float x;
 
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE(TRS,x)
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(TRS, x)
 	};
 
 	struct Mesh
@@ -26,8 +23,8 @@ namespace Component
 	{
 		Float3 albedo;
 		float roughness;
-		
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Material, albedo,roughness)
+
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Material, albedo, roughness)
 	};
 };
 

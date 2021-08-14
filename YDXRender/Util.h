@@ -1,11 +1,11 @@
 #pragma once
-#include <string>
-#include<d3d11_1.h>
-#include<wrl/client.h>
 #ifndef NOMINMAX                       
 #  define NOMINMAX
 #endif
+#include <string>
+#include<d3d11_1.h>
 #include <windows.h>
+#include<wrl/client.h>
 #include <functional>
 #include <DirectXCollision.h>	// ÒÑ°üº¬DirectXMath.h
 #include <DirectXPackedVector.h>
