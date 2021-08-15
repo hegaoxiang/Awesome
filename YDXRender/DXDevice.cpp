@@ -410,7 +410,7 @@ ResourceHandle YXX::DXDevice::RegisterMesh(const std::string& objPath)
 {
 	auto pMesh = std::make_unique<DX11::ResourcePool::MeshData>();
 	string name;
-
+	throw "TODO";
 	REGISTER_RESOURCE(MeshData, name, pMesh);
 
 }

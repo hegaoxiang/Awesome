@@ -17,6 +17,12 @@ private:
 
     void ShowMainMenu();
 
+    void ShowInspector();
+
+    void ShowEntityList();
+
+protected:
+    void ShowHierarchy();
 private:
   
 };

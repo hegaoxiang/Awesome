@@ -5,6 +5,17 @@
 
 namespace Component
 {
+	struct Parent
+	{
+		entt::entity parent;
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Parent, parent)
+	};
+	struct Children
+	{
+		std::set<entt::entity> children;
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Children, children)
+	};
+
 	struct TRS
 	{
 		float x;

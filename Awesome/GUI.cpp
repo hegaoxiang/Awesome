@@ -49,6 +49,7 @@ void GUI::Init()
 
 void GUI::DealCommand(entt::registry& reg)
 {
+	
 	fileDialog.Display();
 	if (fileDialog.HasSelected())
 	{
@@ -172,6 +173,39 @@ void  GUI::ShowMainMenu()
 		ImGui::EndMainMenuBar();
 	}
 }
+
+void GUI::ShowInspector()
+{
+	auto& reg = ECManager::Get().reg;
+	auto& editor = ECManager::Get().editor;
+	static entt::entity sE = (entt::entity)-1;;
+	
+	if (ImGui::Begin("Inspector"))
+	{
+		editor.renderEditor(reg, sE);
+		ImGui::End();
+	}
+}
+
+void GUI::ShowEntityList()
+{
+	auto& reg = ECManager::Get().reg;
+	auto& editor = ECManager::Get().editor;
+
+	if (ImGui::Begin("EntityList"))
+	{
+		editor.renderEntityList(reg);
+		ImGui::End();
+	}
+}
+//////////////////////////////////////////////////////////////////////////
+//  Hierarchy
+//////////////////////////////////////////////////////////////////////////
+void GUI::ShowHierarchy()
+{
+
+}
+
 bool GUI::Update()
 {
 	auto& reg = ECManager::Get().reg;
@@ -180,9 +214,8 @@ bool GUI::Update()
 	ShowMainMenu();
 	DealCommand(reg);
 
-	entt::entity e;
-	editor.renderSimpleCombo(reg, e);
-
+	ShowInspector();
+	ShowEntityList();
 	if (ImGui::Begin("scene"))
 	{
 		if (ImGui::Button("SAVE SCENE"))

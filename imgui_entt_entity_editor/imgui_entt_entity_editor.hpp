@@ -225,8 +225,9 @@ public:
 		}
 	}
 
-	void renderEntityList(Registry& registry, std::set<ComponentTypeID>& comp_list)
+	void renderEntityList(Registry& registry)
 	{
+		static std::set<ComponentTypeID> comp_list;
 		ImGui::Text("Components Filter:");
 		ImGui::SameLine();
 		if (ImGui::SmallButton("clear")) {
@@ -280,14 +281,14 @@ public:
 		}
 	}
 
+	
 	// displays both, editor and list
 	// uses static internally, use only as a quick way to get going!
 	void renderSimpleCombo(Registry& registry, EntityType& e)
 	{
 		if (ImGui::Begin("Entities"))
 		{
-			static std::set<ComponentTypeID> comp_list;
-			renderEntityList(registry, comp_list);
+			renderEntityList(registry);
 
 			ImGui::End();
 		}

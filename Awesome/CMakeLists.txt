@@ -3,6 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+add_definitions(-DTINYGLTF_NO_INCLUDE_JSON)
+add_definitions(-DTINYGLTF_USE_CPP14) 
 AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_LIST_DIR} AwesomeSrc)
 
 # 将源代码添加到此项目的可执行文件。
