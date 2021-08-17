@@ -203,7 +203,47 @@ void GUI::ShowEntityList()
 //////////////////////////////////////////////////////////////////////////
 void GUI::ShowHierarchy()
 {
+	auto& reg = ECManager::Get().reg;
+	class Hierarcchy
+	{
+	public:
+		
+		void Update(entt::registry& reg)
+		{
+			if (ImGui::Begin("Hierarchy"))
+			{
+				if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+					ImGui::OpenPopup("hierarchy_popup");
+				if (ImGui::BeginPopup("hierarchy_popup"))
+				{
+					if (reg.valid(hover))
+					{
+						if (ImGui::MenuItem("Create Entity"))
+						{
+							// Create child
+						}
+						if (ImGui::MenuItem("Delete"))
+						{
+							// delete this and it`s children
+						}
+					}
+					else
+					{
 
+					}
+
+						ImGui::EndPopup();
+				}
+				ImGui::End();
+			}
+		}
+
+		entt::entity hover;
+		entt::entity select;
+	};
+	static Hierarcchy h;
+
+	
 }
 
 bool GUI::Update()
